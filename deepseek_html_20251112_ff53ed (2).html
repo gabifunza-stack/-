@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente Personal Inteligente</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --accent-color: #ff7e5f;
+            --light-color: #f5f7fa;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .tab:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .task-item, .note-item, .habit-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-item.completed {
+            opacity: 0.7;
+            border-left-color: var(--success-color);
+        }
+        
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+        }
+        
+        .task-info, .note-info, .habit-info {
+            flex: 1;
+        }
+        
+        .task-title, .note-title, .habit-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .task-due, .note-date, .habit-streak {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .task-actions, .note-actions, .habit-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .priority-high {
+            border-left-color: var(--danger-color);
+        }
+        
+        .priority-medium {
+            border-left-color: var(--warning-color);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .habit-tracker {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .habit-day {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        .habit-day.completed {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .task-item, .note-item, .habit-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .task-actions, .note-actions, .habit-actions {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Asistente Personal</h1>
+            <p class="tagline">Tu gestor personal gratuito y sin necesidad de registro</p>
+        </header>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="task-count">0</div>
+                <div class="stat-label">Tareas Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="note-count">0</div>
+                <div class="stat-label">Notas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="habit-count">0</div>
+                <div class="stat-label">Hábitos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completed-today">0</div>
+                <div class="stat-label">Completados Hoy</div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="tasks">Tareas</div>
+            <div class="tab" data-tab="notes">Notas</div>
+            <div class="tab" data-tab="habits">Hábitos</div>
+            <div class="tab" data-tab="reminders">Recordatorios</div>
+        </div>
+        
+        <!-- Pestaña de Tareas -->
+        <div class="tab-content active" id="tasks-content">
+            <h2>Gestión de Tareas</h2>
+            <form id="task-form">
+                <div class="form-group">
+                    <label for="task-title">Título de la tarea</label>
+                    <input type="text" id="task-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-description">Descripción (opcional)</label>
+                    <textarea id="task-description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="task-due">Fecha límite (opcional)</label>
+                    <input type="date" id="task-due">
+                </div>
+                <div class="form-group">
+                    <label for="task-priority">Prioridad</label>
+                    <select id="task-priority">
+                        <option value="low">Baja</option>
+                        <option value="medium" selected>Media</option>
+                        <option value="high">Alta</option>
+                    </select>
+                </div>
+                <button type="submit">Agregar Tarea</button>
+            </form>
+            
+            <div id="tasks-list">
+                <!-- Las tareas se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+        
+        <!-- Pestaña de Notas -->
+        <div class="tab-content" id="notes-content">
+            <h2>Notas Rápidas</h2>
+            <form id="note-form">
+                <div class="form-group">
+                    <label for="note-title">Título</label>
+                    <input type="text" id="note-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="note-content">Contenido</label>
+                    <textarea id="note-content" required></textarea>
+                </div>
+                <button type="submit">Guardar Nota</button>
+            </form>
+            
+            <div id="notes-list">
+                <!-- Las notas se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+        
+        <!-- Pestaña de Hábitos -->
+        <div class="tab-content" id="habits-content">
+            <h2>Seguimiento de Hábitos</h2>
+            <form id="habit-form">
+                <div class="form-group">
+                    <label for="habit-name">Nombre del hábito</label>
+                    <input type="text" id="habit-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="habit-description">Descripción (opcional)</label>
+                    <textarea id="habit-description"></textarea>
+                </div>
+                <button type="submit">Agregar Hábito</button>
+            </form>
+            
+            <div id="habits-list">
+                <!-- Los hábitos se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+        
+        <!-- Pestaña de Recordatorios -->
+        <div class="tab-content" id="reminders-content">
+            <h2>Recordatorios</h2>
+            <p>Los recordatorios se mostrarán aquí cuando tengas tareas pendientes con fecha límite próxima.</p>
+            <div id="reminders-list">
+                <!-- Los recordatorios se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+        
+        <div class="notification" id="notification">
+            ¡Tienes tareas pendientes para hoy!
+        </div>
+        
+        <footer>
+            <p>Asistente Personal &copy; 2023 - Todos los datos se guardan localmente en tu navegador</p>
+        </footer>
+    </div>
+
+    <script>
+        // Modelo de datos
+        let appData = {
+            tasks: [],
+            notes: [],
+            habits: []
+        };
+
+        // Cargar datos del almacenamiento local al iniciar
+        function loadData() {
+            const savedData = localStorage.getItem('personalAssistantData');
+            if (savedData) {
+                appData = JSON.parse(savedData);
+            }
+            updateStats();
+            renderTasks();
+            renderNotes();
+            renderHabits();
+            checkReminders();
+        }
+
+        // Guardar datos en el almacenamiento local
+        function saveData() {
+            localStorage.setItem('personalAssistantData', JSON.stringify(appData));
+            updateStats();
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const pendingTasks = appData.tasks.filter(task => !task.completed).length;
+            document.getElementById('task-count').textContent = pendingTasks;
+            document.getElementById('note-count').textContent = appData.notes.length;
+            document.getElementById('habit-count').textContent = appData.habits.length;
+            
+            const today = new Date().toDateString();
+            const completedToday = appData.tasks.filter(task => 
+                task.completed && task.completedDate === today
+            ).length;
+            document.getElementById('completed-today').textContent = completedToday;
+        }
+
+        // Renderizar tareas
+        function renderTasks() {
+            const tasksList = document.getElementById('tasks-list');
+            tasksList.innerHTML = '';
+            
+            if (appData.tasks.length === 0) {
+                tasksList.innerHTML = '<div class="empty-state">No hay tareas. ¡Agrega una nueva!</div>';
+                return;
+            }
+            
+            // Ordenar tareas: no completadas primero, luego por prioridad y fecha
+            const sortedTasks = [...appData.tasks].sort((a, b) => {
+                if (a.completed !== b.completed) {
+                    return a.completed ? 1 : -1;
+                }
+                
+                const priorityOrder = { high: 3, medium: 2, low: 1 };
+                if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+                    return priorityOrder[b.priority] - priorityOrder[a.priority];
+                }
+                
+                if (a.due && b.due) {
+                    return new Date(a.due) - new Date(b.due);
+                }
+                
+                return 0;
+            });
+            
+            sortedTasks.forEach((task, index) => {
+                const taskElement = document.createElement('div');
+                taskElement.className = `task-item ${task.completed ? 'completed' : ''} priority-${task.priority}`;
+                
+                const dueDate = task.due ? new Date(task.due).toLocaleDateString() : 'Sin fecha límite';
+                
+                taskElement.innerHTML = `
+                    <div class="task-info">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-description">${task.description || ''}</div>
+                        <div class="task-due">Vence: ${dueDate}</div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="toggle-task" data-index="${index}">${task.completed ? 'Reabrir' : 'Completar'}</button>
+                        <button class="btn-danger delete-task" data-index="${index}">Eliminar</button>
+                    </div>
+                `;
+                
+                tasksList.appendChild(taskElement);
+            });
+            
+            // Añadir event listeners a los botones
+            document.querySelectorAll('.toggle-task').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    toggleTask(index);
+                });
+            });
+            
+            document.querySelectorAll('.delete-task').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteTask(index);
+                });
+            });
+        }
+
+        // Agregar nueva tarea
+        document.getElementById('task-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('task-title').value;
+            const description = document.getElementById('task-description').value;
+            const due = document.getElementById('task-due').value;
+            const priority = document.getElementById('task-priority').value;
+            
+            const newTask = {
+                id: Date.now(),
+                title,
+                description,
+                due,
+                priority,
+                completed: false,
+                created: new Date().toISOString()
+            };
+            
+            appData.tasks.push(newTask);
+            saveData();
+            renderTasks();
+            
+            // Resetear formulario
+            this.reset();
+            document.getElementById('task-priority').value = 'medium';
+        });
+
+        // Alternar estado de tarea
+        function toggleTask(index) {
+            appData.tasks[index].completed = !appData.tasks[index].completed;
+            if (appData.tasks[index].completed) {
+                appData.tasks[index].completedDate = new Date().toDateString();
+            } else {
+                delete appData.tasks[index].completedDate;
+            }
+            saveData();
+            renderTasks();
+        }
+
+        // Eliminar tarea
+        function deleteTask(index) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+                appData.tasks.splice(index, 1);
+                saveData();
+                renderTasks();
+            }
+        }
+
+        // Renderizar notas
+        function renderNotes() {
+            const notesList = document.getElementById('notes-list');
+            notesList.innerHTML = '';
+            
+            if (appData.notes.length === 0) {
+                notesList.innerHTML = '<div class="empty-state">No hay notas. ¡Crea una nueva!</div>';
+                return;
+            }
+            
+            // Ordenar notas por fecha de creación (más recientes primero)
+            const sortedNotes = [...appData.notes].sort((a, b) => 
+                new Date(b.created) - new Date(a.created)
+            );
+            
+            sortedNotes.forEach((note, index) => {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note-item';
+                
+                const createdDate = new Date(note.created).toLocaleDateString();
+                
+                noteElement.innerHTML = `
+                    <div class="note-info">
+                        <div class="note-title">${note.title}</div>
+                        <div class="note-content">${note.content}</div>
+                        <div class="note-date">Creada: ${createdDate}</div>
+                    </div>
+                    <div class="note-actions">
+                        <button class="btn-danger delete-note" data-index="${index}">Eliminar</button>
+                    </div>
+                `;
+                
+                notesList.appendChild(noteElement);
+            });
+            
+            // Añadir event listeners a los botones de eliminar
+            document.querySelectorAll('.delete-note').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteNote(index);
+                });
+            });
+        }
+
+        // Agregar nueva nota
+        document.getElementById('note-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('note-title').value;
+            const content = document.getElementById('note-content').value;
+            
+            const newNote = {
+                id: Date.now(),
+                title,
+                content,
+                created: new Date().toISOString()
+            };
+            
+            appData.notes.push(newNote);
+            saveData();
+            renderNotes();
+            
+            // Resetear formulario
+            this.reset();
+        });
+
+        // Eliminar nota
+        function deleteNote(index) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta nota?')) {
+                appData.notes.splice(index, 1);
+                saveData();
+                renderNotes();
+            }
+        }
+
+        // Renderizar hábitos
+        function renderHabits() {
+            const habitsList = document.getElementById('habits-list');
+            habitsList.innerHTML = '';
+            
+            if (appData.habits.length === 0) {
+                habitsList.innerHTML = '<div class="empty-state">No hay hábitos. ¡Agrega uno nuevo!</div>';
+                return;
+            }
+            
+            appData.habits.forEach((habit, index) => {
+                const habitElement = document.createElement('div');
+                habitElement.className = 'habit-item';
+                
+                // Calcular racha actual
+                let currentStreak = 0;
+                const today = new Date().toDateString();
+                const dates = Object.keys(habit.completions || {}).sort();
+                
+                for (let i = dates.length - 1; i >= 0; i--) {
+                    const date = dates[i];
+                    if (habit.completions[date]) {
+                        // Si es hoy o días consecutivos
+                        if (date === today || 
+                            (i > 0 && new Date(date).getTime() === new Date(dates[i-1]).getTime() + 86400000)) {
+                            currentStreak++;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                
+                // Generar tracker de últimos 7 días
+                const last7Days = [];
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const dateString = date.toDateString();
+                    last7Days.push({
+                        date: dateString,
+                        completed: habit.completions && habit.completions[dateString] || false
+                    });
+                }
+                
+                habitElement.innerHTML = `
+                    <div class="habit-info">
+                        <div class="habit-name">${habit.name}</div>
+                        <div class="habit-description">${habit.description || ''}</div>
+                        <div class="habit-streak">Racha actual: ${currentStreak} días</div>
+                        <div class="habit-tracker">
+                            ${last7Days.map(day => `
+                                <div class="habit-day ${day.completed ? 'completed' : ''}" 
+                                     data-habit="${index}" 
+                                     data-date="${day.date}">
+                                    ${new Date(day.date).getDate()}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="habit-actions">
+                        <button class="btn-danger delete-habit" data-index="${index}">Eliminar</button>
+                    </div>
+                `;
+                
+                habitsList.appendChild(habitElement);
+            });
+            
+            // Añadir event listeners
+            document.querySelectorAll('.habit-day').forEach(day => {
+                day.addEventListener('click', function() {
+                    const habitIndex = parseInt(this.getAttribute('data-habit'));
+                    const date = this.getAttribute('data-date');
+                    toggleHabitCompletion(habitIndex, date);
+                });
+            });
+            
+            document.querySelectorAll('.delete-habit').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteHabit(index);
+                });
+            });
+        }
+
+        // Agregar nuevo hábito
+        document.getElementById('habit-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('habit-name').value;
+            const description = document.getElementById('habit-description').value;
+            
+            const newHabit = {
+                id: Date.now(),
+                name,
+                description,
+                created: new Date().toISOString(),
+                completions: {}
+            };
+            
+            appData.habits.push(newHabit);
+            saveData();
+            renderHabits();
+            
+            // Resetear formulario
+            this.reset();
+        });
+
+        // Alternar completitud de hábito
+        function toggleHabitCompletion(habitIndex, date) {
+            if (!appData.habits[habitIndex].completions) {
+                appData.habits[habitIndex].completions = {};
+            }
+            
+            appData.habits[habitIndex].completions[date] = 
+                !appData.habits[habitIndex].completions[date];
+            
+            saveData();
+            renderHabits();
+        }
+
+        // Eliminar hábito
+        function deleteHabit(index) {
+            if (confirm('¿Estás seguro de que quieres eliminar este hábito?')) {
+                appData.habits.splice(index, 1);
+                saveData();
+                renderHabits();
+            }
+        }
+
+        // Comprobar recordatorios
+        function checkReminders() {
+            const remindersList = document.getElementById('reminders-list');
+            remindersList.innerHTML = '';
+            
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const upcomingTasks = appData.tasks.filter(task => 
+                !task.completed && 
+                task.due && 
+                new Date(task.due) <= tomorrow &&
+                new Date(task.due) >= today
+            );
+            
+            if (upcomingTasks.length === 0) {
+                remindersList.innerHTML = '<div class="empty-state">No hay recordatorios pendientes.</div>';
+                return;
+            }
+            
+            upcomingTasks.forEach(task => {
+                const reminderElement = document.createElement('div');
+                reminderElement.className = `task-item priority-${task.priority}`;
+                
+                const dueDate = new Date(task.due).toLocaleDateString();
+                const isToday = new Date(task.due).toDateString() === today.toDateString();
+                
+                reminderElement.innerHTML = `
+                    <div class="task-info">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-description">${task.description || ''}</div>
+                        <div class="task-due">Vence: ${dueDate} ${isToday ? '(HOY)' : ''}</div>
+                    </div>
+                `;
+                
+                remindersList.appendChild(reminderElement);
+            });
+            
+            // Mostrar notificación si hay tareas para hoy
+            const tasksDueToday = upcomingTasks.filter(task => 
+                new Date(task.due).toDateString() === today.toDateString()
+            );
+            
+            if (tasksDueToday.length > 0) {
+                showNotification(`Tienes ${tasksDueToday.length} tarea(s) pendiente(s) para hoy`);
+            }
+        }
+
+        // Mostrar notificación
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        // Cambio de pestañas
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remover clase active de todas las pestañas y contenidos
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Añadir clase active a la pestaña clickeada
+                this.classList.add('active');
+                
+                // Mostrar el contenido correspondiente
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(`${tabId}-content`).classList.add('active');
+                
+                // Si es la pestaña de recordatorios, actualizar
+                if (tabId === 'reminders') {
+                    checkReminders();
+                }
+            });
+        });
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            
+            // Comprobar recordatorios cada minuto
+            setInterval(checkReminders, 60000);
+        });
+    </script>
+</body>
+</html>
