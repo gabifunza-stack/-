@@ -1,0 +1,14 @@
+{
+  "name": "asistente-personal",
+  "version": "1.0.0",
+  "description": "Asistente personal inteligente con gestión de tareas, notas y hábitos.",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'Proyecto estático, no requiere build'"
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  },
+  "author": "Usuario",
+  "license": "MIT"
+}
